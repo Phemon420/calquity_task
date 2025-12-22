@@ -2,12 +2,16 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../lib/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+// import { AuthProvider } from './AuthProvider';
 
 export function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,14 +21,15 @@ export function LoginForm() {
       setError('Please enter both username and password');
       return;
     }
-
+    console.log("login route is here");
+    // const response = await login(username, password);
     const response = await login(username, password);
-    if (!response.success) {
+    if (response.success) {
+      // Redirect to home page after successful login
+      router.push('/chat'); 
+    }
+    else{
       setError(response.message || 'Invalid username or password');
-    } else {
-        // Redirect or handle success (handled by parent or routing usually)
-        // For this task, we assume the state update in context is enough
-        // but we could also use router.push() here if we were integrating fully
     }
   };
 
@@ -99,6 +104,16 @@ export function LoginForm() {
             </button>
           </div>
         </form>
+        <div className="text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Do not have an account?{' '}
+            <Link 
+              href="/signup" 
+              className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+            >
+              Create one now
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

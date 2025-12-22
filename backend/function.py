@@ -79,11 +79,6 @@ def function_client_read_gemini(config_gemini_key):
     client_gemini=OpenAI(api_key=config_gemini_key,base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
     return client_gemini
 
-#db connections establish
-import asyncpg
-async def function_client_read_postgres_asyncpg(config_postgres_url):
-    client_postgres_asyncpg=await asyncpg.connect(config_postgres_url)
-    return client_postgres_asyncpg
 
 #client
 from databases import Database

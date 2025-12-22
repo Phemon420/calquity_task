@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../lib/hooks/useAuth';
+import Link from 'next/link';
 
 export function SignUpForm() {
   const [username, setUsername] = useState('');
@@ -119,6 +120,16 @@ export function SignUpForm() {
             </button>
           </div>
         </form>
+                <div className="text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">already have an account?{' '}
+            <Link 
+              href="/login" 
+              className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+            >
+              Get back in it
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

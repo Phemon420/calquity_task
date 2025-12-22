@@ -18,7 +18,7 @@ async def function_api_auth_signup(request:Request,signup:Signup):
       request.app.state.config_token_user_key_list
    )
    print("checkpoint2")
-   return {"status":1,"message":token}
+   return {"status":1,"Token":token}
 
 @app.post("/auth/login")
 async def function_api_auth_login_password(request:Request,login:Login):
@@ -29,4 +29,4 @@ async def function_api_auth_login_password(request:Request,login:Login):
          user,
          request.app.state.config_token_user_key_list
       )
-   return {"status":1,"message":token}
+   return {"status":1,"Token":token}

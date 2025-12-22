@@ -1,71 +1,58 @@
-import { AuthResponse, LoginCredentials, SignUpCredentials, User } from '../types/auth';
+import { AuthResponse, LoginCredentials, SignUpCredentials } from '../types/auth';
 
 const TOKEN_KEY = 'auth_token';
+const API_BASE_URL = process.env.backend_url || 'http://127.0.0.1:8000'; // Update this to your FastAPI URL
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      console.log('API_BASE_URL:', API_BASE_URL); // Debugging line
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
 
-    // Mock validation
-    if (credentials.username && credentials.password) {
-      // Success
-      const mockToken = `mock-jwt-token-${Date.now()}`;
-      const mockUser: User = {
-        id: '1',
-        username: credentials.username,
-        name: credentials.username.charAt(0).toUpperCase() + credentials.username.slice(1),
-        avatar: undefined,
-      };
+      const data = await response.json();
 
-      // Store token
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(TOKEN_KEY, mockToken);
+      // Backend returns { "status": 1, "message": "token" }
+      if (response.ok && data.status === 1) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(TOKEN_KEY, data.Token);
+        }
+        return { success: true, token: data.Token };
       }
 
-      return {
-        success: true,
-        token: mockToken,
-        user: mockUser,
-      };
-    } else {
-      return {
-        success: false,
-        message: 'Invalid username or password',
-      };
+      return { success: false, message: data.detail || 'Login failed' };
+    } catch (error) {
+      return { success: false, message:`Network error occurred: ${error}` };
     }
   },
 
   async signup(credentials: SignUpCredentials): Promise<AuthResponse> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: credentials.username,
+            password: credentials.password
+        }),
+      });
 
-    if (!credentials.username || !credentials.password) {
-        return { success: false, message: 'Username and password are required' };
+      const data = await response.json();
+
+      if (response.ok && data.status === 1) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(TOKEN_KEY, data.Token);
+        }
+        return { success: true, token: data.Token };
+      }
+
+      return { success: false, message: data.detail || 'Signup failed' };
+    } catch (error) {
+      return { success: false, message: `Network error occurred: ${error}` };
     }
-
-    if (credentials.password !== credentials.confirmPassword) {
-        return { success: false, message: 'Passwords do not match' };
-    }
-
-    // Success (Mock)
-    const mockToken = `mock-jwt-token-${Date.now()}`;
-    const mockUser: User = {
-      id: Date.now().toString(),
-      username: credentials.username,
-      name: credentials.username.charAt(0).toUpperCase() + credentials.username.slice(1),
-    };
-
-    // Store token
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(TOKEN_KEY, mockToken);
-    }
-
-    return {
-      success: true,
-      token: mockToken,
-      user: mockUser,
-    };
   },
 
   logout() {
