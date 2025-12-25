@@ -1,7 +1,7 @@
 import { AuthResponse, LoginCredentials, SignUpCredentials } from '../types/auth';
 
 const TOKEN_KEY = 'auth_token';
-const API_BASE_URL = process.env.backend_url || 'http://127.0.0.1:8000'; // Update this to your FastAPI URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ; // Update this to your FastAPI URL
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
